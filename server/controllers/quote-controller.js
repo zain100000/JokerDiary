@@ -34,16 +34,25 @@ const addQuote = async (req, res, next) => {
 
 const getQuotes = async (req, res, next) => {
   try {
-    const quote = await Quote.find();
+    const { category } = req.query;
 
-    if (!quote) {
-      return res.status(404).json({ message: "No Quotes!" });
+    let quotes;
+
+    if (category) {
+      quotes = await Quote.find({ category });
+    } else {
+      quotes = await Quote.find();
     }
 
-    res.status(200).json({ Quote: quote });
-  } catch {
-    const error = new HttpError("Failed To Get Quotes!", 500);
-    return next(error);
+    if (!quotes || quotes.length === 0) {
+      return res.status(404).json({ message: "No Quotes found!" });
+    }
+
+    res.status(200).json({ Quote: quotes });
+  } catch (error) {
+    console.error("Error fetching quotes:", error);
+    const err = new HttpError("Failed to fetch quotes!", 500);
+    return next(err);
   }
 };
 
