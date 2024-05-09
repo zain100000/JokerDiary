@@ -17,6 +17,7 @@ import COLORS from '../consts/Colors';
 const Contact = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [mobile, setMobile] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -51,6 +52,22 @@ const Contact = () => {
             />
             <MaterialCommunityIcons
               name="email-outline"
+              size={30}
+              style={styles.icon}
+            />
+          </View>
+
+          <View style={{flexDirection: 'row'}}>
+            <TextInput
+              style={styles.input}
+              placeholder="Mobile"
+              placeholderTextColor={COLORS.dark}
+              autoCapitalize="none"
+              value={mobile}
+              onChangeText={text => setMobile(text)}
+            />
+            <MaterialCommunityIcons
+              name="phone-outline"
               size={30}
               style={styles.icon}
             />

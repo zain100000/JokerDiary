@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 
 const quoteRoutes = require("./routes/quote-route");
+const contactRoutes = require("./routes/contact-route");
 require("dotenv").config();
 
 const app = express();
@@ -22,8 +23,8 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.use("/api/admin", adminRoutes);
 app.use("/api/quotes", quoteRoutes);
+app.use("/api/contact", contactRoutes);
 
 mongoose
   .connect(process.env.MONGODB_URI)

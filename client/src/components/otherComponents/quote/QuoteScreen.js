@@ -18,7 +18,7 @@ import COLORS from '../../consts/Colors';
 
 const {Clipboard} = NativeModules;
 
-const QuoteCard = ({quote}) => {
+export const QuoteCard = ({quote}) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -48,6 +48,7 @@ const QuoteCard = ({quote}) => {
   return (
     <SafeAreaView>
       <View style={styles.card}>
+        <Text style={styles.category}>{quote.category}</Text>
         <View style={styles.quoteContainer}>
           <Text style={styles.quote}>{quote.title}</Text>
         </View>
@@ -186,6 +187,14 @@ const styles = StyleSheet.create({
     width: '100%',
     textAlign: 'center',
     lineHeight: 30,
+  },
+
+  category: {
+    color: COLORS.dark,
+    fontSize: 16,
+    fontWeight: 'bold',
+    paddingHorizontal: 5,
+    padding: 5,
   },
 
   buttonContainer: {
