@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
 import axios from 'axios';
+import {QuoteCard} from '../otherComponents/quote/QuoteScreen';
 import COLORS from '../consts/Colors';
 
-const QuoteOfTheDayScreen = () => {
+const QuoteOfTheDay = () => {
   const [quote, setQuote] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -14,7 +15,7 @@ const QuoteOfTheDayScreen = () => {
   const fetchQuoteOfTheDay = () => {
     setLoading(true);
     axios
-      .get('https://jokerdiary.onrender.com/api/quotes/getQuoteOfDay')
+      .get('https://jokerdiary.onrender.com/api/quotes/getRandomQuote')
       .then(response => {
         setQuote(response.data.Quote);
         setLoading(false);
@@ -27,14 +28,11 @@ const QuoteOfTheDayScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Quote of the Day</Text>
       {loading ? (
-        <View style={[styles.loadingContainer, styles.container]}>
-          <ActivityIndicator size="large" color={COLORS.dark} />
-        </View>
+        <ActivityIndicator size="large" color={COLORS.dark} />
       ) : (
-        <View style={styles.quoteContainer}>
-          <Text style={styles.quoteText}>{quote.title}</Text>
-        </View>
+        quote && <QuoteCard quote={quote} />
       )}
     </View>
   );
@@ -45,25 +43,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 20,
   },
 
-  loadingContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  quoteContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: COLORS.light,
-    borderRadius: 10,
-  },
-
-  quoteText: {
-    fontSize: 18,
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
     color: COLORS.dark,
-    textAlign: 'center',
   },
 });
 
-export default QuoteOfTheDayScreen;
+export default QuoteOfTheDay;

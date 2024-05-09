@@ -90,30 +90,20 @@ const getLatestQuotes = async (req, res, next) => {
   }
 };
 
-const getQuoteOfDay = async (req, res, next) => {
+const getRandomQuotes = async (req, res, next) => {
   try {
-    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const quoteOfDay = await Quote.findOne({
-      createdAt: { $lt: twentyFourHoursAgo },
-    }).sort({ quoteOfDayUpdatedAt: -1 });
+    const count = await Quote.countDocuments();
+    const random = Math.floor(Math.random() * count);
+    const randomQuote = await Quote.findOne().skip(random);
 
-    if (!quoteOfDay) {
-      const randomQuote = await Quote.aggregate([
-        { $sample: { size: 1 } },
-      ]).exec();
-
-      await Quote.updateOne(
-        { _id: randomQuote._id },
-        { $set: { quoteOfDayUpdatedAt: Date.now() } }
-      );
-
-      res.status(200).json({ Quote: randomQuote });
-    } else {
-      res.status(200).json({ Quote: quoteOfDay });
+    if (!randomQuote) {
+      return res.status(404).json({ message: "No Quotes Found!" });
     }
+
+    res.status(200).json({ Quote: randomQuote });
   } catch (error) {
-    console.error("Error fetching quote of the day:", error);
-    const err = new HttpError("Failed to fetch quote of the day!", 500);
+    console.error("Error fetching random quote:", error);
+    const err = new HttpError("Failed to fetch random quote!", 500);
     return next(err);
   }
 };
@@ -189,5 +179,5 @@ module.exports = {
   updateQuotes,
   deleteQuote,
   getLatestQuotes,
-  getQuoteOfDay,
+  getRandomQuotes,
 };
