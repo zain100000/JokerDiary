@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
     margin: 10,
     paddingHorizontal: 15,
     borderRadius: 50,
+    color: COLORS.dark,
   },
 
   cardRow: {

@@ -38,6 +38,7 @@ const LikedQuotes = () => {
 
   const onRefresh = () => {
     setRefreshing(true);
+    setLikedQuotes([]);
     fetchLikedQuotes();
   };
 

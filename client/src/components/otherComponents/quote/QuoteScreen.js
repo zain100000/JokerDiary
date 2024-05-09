@@ -11,6 +11,7 @@ import {
   Platform,
   SafeAreaView,
   RefreshControl,
+  TextInput,
 } from 'react-native';
 import axios from 'axios';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -18,9 +19,10 @@ import COLORS from '../../consts/Colors';
 
 const {Clipboard} = NativeModules;
 
-export const QuoteCard = ({quote, onLikePress}) => {
+export const QuoteCard = ({quote, onLikePress, onUnLikePress}) => {
   const [copied, setCopied] = useState(false);
   const [liked, setLiked] = useState(quote.liked);
+  const [unliked, setUnLiked] = useState(quote.unliked);
 
   const handleCopy = () => {
     copyToClipboard(quote.title);
@@ -39,18 +41,27 @@ export const QuoteCard = ({quote, onLikePress}) => {
 
   const handleLikePress = async () => {
     try {
-      console.log('Like button pressed');
       const response = await axios.post(
-        `https://jokerdiary.onrender.com/api/quotes/likeQuote/${quote._id}`,
-        console.log('Quote ID:', quote._id),
+        `https://jokerdiary.onrender.com/api/quotes/likeQuote/${quote._id}`, // Add / before quote._id
       );
-      console.log('Like response:', response.data);
-      if (response.data.success) {
-        onLikePress(quote, !liked);
-        setLiked(!liked);
+      if (response.status >= 200 && response.status < 300) {
+        alert('Quote Liked!');
       }
     } catch (error) {
       console.error('Error liking quote:', error);
+    }
+  };
+
+  const handleUnLikePress = async () => {
+    try {
+      const response = await axios.post(
+        `https://jokerdiary.onrender.com/api/quotes/unlikeQuote/${quote._id}`,
+      );
+      if (response.status >= 200 && response.status < 300) {
+        alert('Quote Unliked!');
+      }
+    } catch (error) {
+      console.error('Error unliking quote:', error);
     }
   };
 
@@ -59,7 +70,6 @@ export const QuoteCard = ({quote, onLikePress}) => {
       Clipboard.setString(text);
     } else {
       Clipboard.setString(text);
-      alert('This feature is not supported on iOS');
     }
   };
 
@@ -71,7 +81,9 @@ export const QuoteCard = ({quote, onLikePress}) => {
           <Text style={styles.quote}>{quote.title}</Text>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleLikePress}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={liked ? handleUnLikePress : handleLikePress}>
             <MaterialCommunityIcon
               name={liked ? 'heart' : 'heart-outline'}
               size={30}
@@ -130,6 +142,7 @@ const QuoteScreen = ({route}) => {
   const [quotes, setQuotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchQuotes();
@@ -158,6 +171,10 @@ const QuoteScreen = ({route}) => {
     fetchQuotes();
   };
 
+  const filteredQuotes = quotes.filter(quote =>
+    quote.title.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
   if (loading) {
     return (
       <View style={[styles.container, styles.loadingContainer]}>
@@ -168,9 +185,16 @@ const QuoteScreen = ({route}) => {
 
   return (
     <View style={styles.container}>
-      {quotes && quotes.length > 0 ? (
+      <TextInput
+        style={styles.input}
+        onChangeText={text => setSearchQuery(text)}
+        value={searchQuery}
+        placeholder="Search Quotes"
+        placeholderTextColor={COLORS.dark}
+      />
+      {filteredQuotes.length > 0 ? (
         <FlatList
-          data={quotes}
+          data={filteredQuotes}
           renderItem={({item}) => <QuoteCard quote={item} />}
           keyExtractor={item => item.id.toString()}
           refreshControl={
@@ -184,7 +208,9 @@ const QuoteScreen = ({route}) => {
         />
       ) : (
         <View style={styles.noQuotesContainer}>
-          <Text style={styles.noQuotes}>No Quotes Related To {category}</Text>
+          <Text style={styles.noQuotes}>
+            {category ? `No Quotes Related to ${category}` : 'No Quotes Found'}
+          </Text>
         </View>
       )}
     </View>
@@ -200,6 +226,18 @@ const styles = StyleSheet.create({
   loadingContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+  input: {
+    height: 40,
+    borderColor: COLORS.dark,
+    borderWidth: 1,
+    margin: 10,
+    paddingHorizontal: 15,
+    borderRadius: 50,
+    color: COLORS.dark,
+    fontSize: 16,
+    fontWeight: '600',
   },
 
   card: {

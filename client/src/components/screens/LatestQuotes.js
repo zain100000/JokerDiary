@@ -22,7 +22,6 @@ const LatestQuotesScreen = () => {
 
   const fetchLatestQuotes = () => {
     setLoading(true);
-    // Fetch latest quotes from the backend
     axios
       .get('https://jokerdiary.onrender.com/api/quotes/latestQuotes')
       .then(response => {
