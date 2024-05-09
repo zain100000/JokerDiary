@@ -192,7 +192,7 @@ const addLikedQuote = async (req, res, next) => {
 };
 
 const removeLikedQuote = async (req, res, next) => {
-  const { quoteId } = req.body;
+  const quoteId = req.params.id;
 
   try {
     const quote = await Quote.findById(quoteId);

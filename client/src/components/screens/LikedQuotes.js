@@ -5,6 +5,7 @@ import {
   FlatList,
   ActivityIndicator,
   Text,
+  RefreshControl,
 } from 'react-native';
 import axios from 'axios';
 import {QuoteCard} from '../otherComponents/quote/QuoteScreen';
@@ -26,16 +27,18 @@ const LikedQuotes = () => {
       .then(response => {
         setLikedQuotes(response.data.LikedQuotes);
         setLoading(false);
+        setRefreshing(false);
       })
       .catch(error => {
         console.error('Error:', error);
         setLoading(false);
+        setRefreshing(false);
       });
   };
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchQuotes();
+    fetchLikedQuotes();
   };
 
   if (loading) {

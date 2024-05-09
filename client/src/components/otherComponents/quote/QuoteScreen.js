@@ -41,9 +41,7 @@ export const QuoteCard = ({quote, onLikePress}) => {
     try {
       console.log('Like button pressed');
       const response = await axios.post(
-        `https://jokerdiary.onrender.com/api/quotes/likeQuote${
-          liked ? 'unlike' : 'like'
-        }/${quote._id}`,
+        `https://jokerdiary.onrender.com/api/quotes/likeQuote/${quote._id}`,
         console.log('Quote ID:', quote._id),
       );
       console.log('Like response:', response.data);
