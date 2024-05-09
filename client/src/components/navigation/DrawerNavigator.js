@@ -4,9 +4,9 @@ import CustomDrawer from '../consts/CustomDrawer';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import COLORS from '../consts/Colors';
 import Home from '../screens/Home';
-import LikeQuotes from '../screens/LikeQuotes';
 import Contact from '../screens/Contact';
 import PrivacyPolicy from '../screens/PrivacyPolicy';
+import LatestQuotes from '../screens/LatestQuotes';
 
 const Drawer = createDrawerNavigator();
 
@@ -20,7 +20,7 @@ const DrawerNavigator = () => {
         headerTitle: 'Jokers Diary Quotes',
       }}>
       <Drawer.Screen
-        name="Homes"
+        name="Home"
         component={Home}
         options={{
           drawerIcon: ({color}) => (
@@ -41,15 +41,11 @@ const DrawerNavigator = () => {
       />
 
       <Drawer.Screen
-        name="Like Quotes"
-        component={LikeQuotes}
+        name="Latest Quotes"
+        component={LatestQuotes}
         options={{
           drawerIcon: ({color}) => (
-            <MaterialCommunityIcons
-              name="heart-outline"
-              size={22}
-              color={color}
-            />
+            <MaterialCommunityIcons name="autorenew" size={22} color={color} />
           ),
           drawerLabelStyle: {marginLeft: -20, fontWeight: '700', fontSize: 16},
 

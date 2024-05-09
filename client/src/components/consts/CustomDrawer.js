@@ -16,7 +16,6 @@ const CustomDrawer = props => {
           <View style={styles.headerContainer}>
             <Image source={BgImage} style={styles.image} />
           </View>
-          <Text style={styles.title}>Joker's Diary</Text>
         </View>
         <View style={{flex: 1, backgroundColor: COLORS.white, paddingTop: 10}}>
           <DrawerItemList {...props} />

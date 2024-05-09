@@ -74,6 +74,22 @@ const getQuotesById = async (req, res, next) => {
   }
 };
 
+const getLatestQuotes = async (req, res, next) => {
+  try {
+    const latestQuotes = await Quote.find().sort({ _id: -1 }).limit(10); // Fetch latest 10 quotes sorted by creation date
+
+    if (!latestQuotes || latestQuotes.length === 0) {
+      return res.status(404).json({ message: "No Latest Quotes found!" });
+    }
+
+    res.status(200).json({ LatestQuotes: latestQuotes });
+  } catch (error) {
+    console.error("Error fetching latest quotes:", error);
+    const err = new HttpError("Failed to fetch latest quotes!", 500);
+    return next(err);
+  }
+};
+
 const updateQuotes = async (req, res, next) => {
   const quoteId = req.params.id;
 
@@ -144,4 +160,5 @@ module.exports = {
   getQuotesById,
   updateQuotes,
   deleteQuote,
+  getLatestQuotes,
 };

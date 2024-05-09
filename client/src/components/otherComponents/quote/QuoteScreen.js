@@ -5,35 +5,128 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
+  TouchableOpacity,
+  Share,
+  NativeModules,
+  Platform,
+  SafeAreaView,
+  RefreshControl,
 } from 'react-native';
 import axios from 'axios';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import COLORS from '../../consts/Colors';
+
+const {Clipboard} = NativeModules;
+
+const QuoteCard = ({quote}) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    copyToClipboard(quote.title);
+    setCopied(true);
+  };
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: quote.title,
+      });
+    } catch (error) {
+      console.error('Error sharing quote:', error.message);
+    }
+  };
+
+  const copyToClipboard = text => {
+    if (Platform.OS === 'android') {
+      Clipboard.setString(text);
+    } else {
+      Clipboard.setString(text);
+      alert('This feature is not supported on iOS');
+    }
+  };
+
+  return (
+    <SafeAreaView>
+      <View style={styles.card}>
+        <View style={styles.quoteContainer}>
+          <Text style={styles.quote}>{quote.title}</Text>
+        </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleCopy}>
+            <MaterialCommunityIcon
+              name={copied ? 'check-circle' : 'clipboard-outline'}
+              size={30}
+              color={copied ? COLORS.primary : COLORS.dark}
+            />
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: '700',
+                color: copied ? COLORS.primary : COLORS.dark,
+                textAlign: 'center',
+              }}>
+              {copied ? 'Copied' : 'Copy'}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleShare}>
+            <MaterialCommunityIcon
+              name="share-outline"
+              size={30}
+              color={COLORS.dark}
+            />
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: '700',
+                color: COLORS.dark,
+                textAlign: 'center',
+              }}>
+              Share
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+};
 
 const QuoteScreen = ({route}) => {
   const {category} = route.params;
   const [quotes, setQuotes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
+    fetchQuotes();
+  }, [category]);
+
+  const fetchQuotes = () => {
     setLoading(true);
     axios
       .get(
         `https://jokerdiary.onrender.com/api/quotes/getQuotes?category=${category}`,
       )
       .then(response => {
-        console.log('Response:', response.data);
         setQuotes(response.data.Quote);
         setLoading(false);
+        setRefreshing(false);
       })
       .catch(error => {
         console.error('Error:', error);
         setLoading(false);
+        setRefreshing(false);
       });
-  }, [category]);
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchQuotes();
+  };
 
   if (loading) {
     return (
       <View style={[styles.container, styles.loadingContainer]}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color={COLORS.dark} />
       </View>
     );
   }
@@ -43,13 +136,21 @@ const QuoteScreen = ({route}) => {
       {quotes && quotes.length > 0 ? (
         <FlatList
           data={quotes}
-          renderItem={({item}) => (
-            <Text style={styles.quote}>{item.title}</Text>
-          )}
+          renderItem={({item}) => <QuoteCard quote={item} />}
           keyExtractor={item => item.id.toString()}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[COLORS.dark]}
+            />
+          }
+          showsVerticalScrollIndicator={false}
         />
       ) : (
-        <Text>No Quote Related To {category}</Text>
+        <View style={styles.noQuotesContainer}>
+          <Text style={styles.noQuotes}>No Quotes Related To {category}</Text>
+        </View>
       )}
     </View>
   );
@@ -60,13 +161,55 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+
   loadingContainer: {
     justifyContent: 'center',
     alignItems: 'center',
   },
+
+  card: {
+    backgroundColor: COLORS.white,
+    padding: 5,
+    margin: 15,
+  },
+
+  quoteContainer: {
+    backgroundColor: '#333',
+    padding: 80,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+
   quote: {
-    fontSize: 18,
-    marginBottom: 10,
+    fontSize: 22,
+    color: '#fff',
+    width: '100%',
+    textAlign: 'center',
+    lineHeight: 30,
+  },
+
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 10,
+  },
+
+  button: {
+    padding: 10,
+    borderRadius: 5,
+  },
+
+  noQuotesContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  noQuotes: {
+    fontSize: 20,
+    color: COLORS.dark,
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
 });
 
