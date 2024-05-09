@@ -16,4 +16,8 @@ router.patch("/updateQuotes/:id", quoteController.updateQuotes);
 
 router.delete("/removeQuotes/:id", quoteController.deleteQuote);
 
+router.post("/likeQuote/:id", quoteController.addLikedQuote);
+
+router.post("/unlikeQuote/:id", quoteController.removeLikedQuote);
+
 module.exports = router;

@@ -18,6 +18,10 @@ const quoteSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  liked: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Quote = mongoose.model("Quote", quoteSchema);

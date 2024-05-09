@@ -20,6 +20,7 @@ const {Clipboard} = NativeModules;
 
 export const QuoteCard = ({quote}) => {
   const [copied, setCopied] = useState(false);
+  const [liked, setLiked] = useState(false);
 
   const handleCopy = () => {
     copyToClipboard(quote.title);
@@ -34,6 +35,10 @@ export const QuoteCard = ({quote}) => {
     } catch (error) {
       console.error('Error sharing quote:', error.message);
     }
+  };
+
+  const handleLike = () => {
+    setLiked(!liked);
   };
 
   const copyToClipboard = text => {
@@ -53,6 +58,22 @@ export const QuoteCard = ({quote}) => {
           <Text style={styles.quote}>{quote.title}</Text>
         </View>
         <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleLike}>
+            <MaterialCommunityIcon
+              name={liked ? 'heart' : 'heart-outline'}
+              size={30}
+              color={liked ? COLORS.liked : COLORS.dark}
+            />
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: '700',
+                color: liked ? COLORS.liked : COLORS.dark,
+                textAlign: 'center',
+              }}>
+              {liked ? 'Liked' : 'Like'}
+            </Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleCopy}>
             <MaterialCommunityIcon
               name={copied ? 'check-circle' : 'clipboard-outline'}

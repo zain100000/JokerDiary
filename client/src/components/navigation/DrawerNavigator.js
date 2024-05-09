@@ -8,6 +8,7 @@ import Contact from '../screens/Contact';
 import PrivacyPolicy from '../screens/PrivacyPolicy';
 import LatestQuotes from '../screens/LatestQuotes';
 import QuoteOfTheDay from '../screens/QuoteOfDay';
+import LikedQuotes from '../screens/LikedQuotes';
 
 const Drawer = createDrawerNavigator();
 
@@ -27,6 +28,27 @@ const DrawerNavigator = () => {
           drawerIcon: ({color}) => (
             <MaterialCommunityIcons
               name="home-outline"
+              size={22}
+              color={color}
+            />
+          ),
+          drawerLabelStyle: {marginLeft: -20, fontWeight: '700', fontSize: 16},
+
+          headerStyle: {
+            height: 80,
+            backgroundColor: COLORS.white,
+          },
+          headerTitleStyle: {fontSize: 25, fontWeight: '600'},
+        }}
+      />
+
+      <Drawer.Screen
+        name="Liked Quotes"
+        component={LikedQuotes}
+        options={{
+          drawerIcon: ({color}) => (
+            <MaterialCommunityIcons
+              name="heart-outline"
               size={22}
               color={color}
             />

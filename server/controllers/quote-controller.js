@@ -172,6 +172,44 @@ const deleteQuote = async (req, res, next) => {
   }
 };
 
+const addLikedQuote = async (req, res, next) => {
+  const { quoteId } = req.body;
+
+  try {
+    const quote = await Quote.findById(quoteId);
+    if (!quote) {
+      return res.status(404).json({ message: "Quote not found" });
+    }
+
+    quote.liked = true;
+    await quote.save();
+
+    res.status(200).json({ message: "Quote added to liked quotes" });
+  } catch (error) {
+    console.error("Error adding liked quote:", error);
+    res.status(500).json({ message: "Failed to add liked quote" });
+  }
+};
+
+const removeLikedQuote = async (req, res, next) => {
+  const { quoteId } = req.body;
+
+  try {
+    const quote = await Quote.findById(quoteId);
+    if (!quote) {
+      return res.status(404).json({ message: "Quote not found" });
+    }
+
+    quote.liked = false;
+    await quote.save();
+
+    res.status(200).json({ message: "Quote removed from liked quotes" });
+  } catch (error) {
+    console.error("Error removing liked quote:", error);
+    res.status(500).json({ message: "Failed to remove liked quote" });
+  }
+};
+
 module.exports = {
   addQuote,
   getQuotes,
@@ -180,4 +218,6 @@ module.exports = {
   deleteQuote,
   getLatestQuotes,
   getRandomQuotes,
+  addLikedQuote,
+  removeLikedQuote,
 };
