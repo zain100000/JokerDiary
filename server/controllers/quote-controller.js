@@ -107,9 +107,9 @@ const getQuoteOfDay = async (req, res, next) => {
         { $set: { quoteOfDayUpdatedAt: Date.now() } }
       );
 
-      res.status(200).json({ quote: randomQuote });
+      res.status(200).json({ Quote: randomQuote });
     } else {
-      res.status(200).json({ quote: quoteOfDay });
+      res.status(200).json({ Quote: quoteOfDay });
     }
   } catch (error) {
     console.error("Error fetching quote of the day:", error);

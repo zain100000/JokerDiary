@@ -1,10 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
 import axios from 'axios';
-import {QuoteCard} from '../otherComponents/quote/QuoteScreen';
 import COLORS from '../consts/Colors';
 
-const QuoteOfTheDay = () => {
+const QuoteOfTheDayScreen = () => {
   const [quote, setQuote] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -15,7 +14,7 @@ const QuoteOfTheDay = () => {
   const fetchQuoteOfTheDay = () => {
     setLoading(true);
     axios
-      .get('https://jokerdiary.onrender.com/api/quotes/getRandomQuotes')
+      .get('https://jokerdiary.onrender.com/api/quotes/getQuoteOfDay')
       .then(response => {
         setQuote(response.data.Quote);
         setLoading(false);
@@ -28,11 +27,14 @@ const QuoteOfTheDay = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Quote of the Day</Text>
       {loading ? (
-        <ActivityIndicator size="large" color={COLORS.dark} />
+        <View style={[styles.loadingContainer, styles.container]}>
+          <ActivityIndicator size="large" color={COLORS.dark} />
+        </View>
       ) : (
-        quote && <QuoteCard quote={quote} />
+        <View style={styles.quoteContainer}>
+          <Text style={styles.quoteText}>{quote.title}</Text>
+        </View>
       )}
     </View>
   );
@@ -43,15 +45,25 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
   },
 
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  quoteContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: COLORS.light,
+    borderRadius: 10,
+  },
+
+  quoteText: {
+    fontSize: 18,
     color: COLORS.dark,
+    textAlign: 'center',
   },
 });
 
-export default QuoteOfTheDay;
+export default QuoteOfTheDayScreen;
