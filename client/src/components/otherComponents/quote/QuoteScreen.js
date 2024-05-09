@@ -39,11 +39,14 @@ export const QuoteCard = ({quote, onLikePress}) => {
 
   const handleLikePress = async () => {
     try {
+      console.log('Like button pressed');
       const response = await axios.post(
         `https://jokerdiary.onrender.com/api/quotes/likeQuote${
           liked ? 'unlike' : 'like'
-        }/${quote.id}`,
+        }/${quote._id}`,
+        console.log('Quote ID:', quote._id),
       );
+      console.log('Like response:', response.data);
       if (response.data.success) {
         onLikePress(quote, !liked);
         setLiked(!liked);
@@ -76,7 +79,13 @@ export const QuoteCard = ({quote, onLikePress}) => {
               size={30}
               color={liked ? COLORS.liked : COLORS.dark}
             />
-            <Text style={{color: COLORS.dark}}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: '700',
+                color: COLORS.dark,
+                textAlign: 'center',
+              }}>
               {liked ? 'Unlike' : 'Like'}
             </Text>
           </TouchableOpacity>
