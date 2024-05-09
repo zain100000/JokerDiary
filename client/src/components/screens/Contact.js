@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import axios from 'axios';
 import COLORS from '../consts/Colors';
 
 const Contact = () => {
@@ -20,6 +21,37 @@ const Contact = () => {
   const [mobile, setMobile] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handleContactForm = async () => {
+    try {
+      setLoading(true);
+      const contactFormData = {
+        name,
+        email,
+        mobile,
+        message,
+      };
+
+      const ContactFormApiUrl =
+        'https://jokerdiary.onrender.com/api/contact/uploadContactForm';
+      const response = await axios.post(ContactFormApiUrl, contactFormData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.status >= 200 && response.status < 300) {
+        alert('Thank You! Your Response Has Been Submitted!');
+      } else {
+        alert('Error Submitting Contact Form!');
+      }
+    } catch (error) {
+      console.error('Error during submitting Contact Form:', error);
+      alert('Error During Submitting Contact Form!');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -63,6 +95,7 @@ const Contact = () => {
               placeholder="Mobile"
               placeholderTextColor={COLORS.dark}
               autoCapitalize="none"
+              keyboardType="number-pad"
               value={mobile}
               onChangeText={text => setMobile(text)}
             />
@@ -89,7 +122,7 @@ const Contact = () => {
             />
           </View>
 
-          <TouchableOpacity style={styles.btn}>
+          <TouchableOpacity style={styles.btn} onPress={handleContactForm}>
             {loading ? (
               <ActivityIndicator color={COLORS.white} />
             ) : (
@@ -124,7 +157,7 @@ const styles = StyleSheet.create({
     paddingLeft: 35,
     marginBottom: 20,
     paddingBottom: 8,
-    color: COLORS.white,
+    color: COLORS.dark,
     fontWeight: '800',
     borderTopWidth: 0,
     borderLeftWidth: 0,
