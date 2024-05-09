@@ -18,9 +18,9 @@ import COLORS from '../../consts/Colors';
 
 const {Clipboard} = NativeModules;
 
-export const QuoteCard = ({quote}) => {
+export const QuoteCard = ({quote, onLikePress}) => {
   const [copied, setCopied] = useState(false);
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(quote.liked);
 
   const handleCopy = () => {
     copyToClipboard(quote.title);
@@ -37,8 +37,20 @@ export const QuoteCard = ({quote}) => {
     }
   };
 
-  const handleLike = () => {
-    setLiked(!liked);
+  const handleLikePress = async () => {
+    try {
+      const response = await axios.post(
+        `https://jokerdiary.onrender.com/api/quotes/likeQuote${
+          liked ? 'unlike' : 'like'
+        }/${quote.id}`,
+      );
+      if (response.data.success) {
+        onLikePress(quote, !liked);
+        setLiked(!liked);
+      }
+    } catch (error) {
+      console.error('Error liking quote:', error);
+    }
   };
 
   const copyToClipboard = text => {
@@ -58,20 +70,14 @@ export const QuoteCard = ({quote}) => {
           <Text style={styles.quote}>{quote.title}</Text>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleLike}>
+          <TouchableOpacity style={styles.button} onPress={handleLikePress}>
             <MaterialCommunityIcon
               name={liked ? 'heart' : 'heart-outline'}
               size={30}
               color={liked ? COLORS.liked : COLORS.dark}
             />
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: '700',
-                color: liked ? COLORS.liked : COLORS.dark,
-                textAlign: 'center',
-              }}>
-              {liked ? 'Liked' : 'Like'}
+            <Text style={{color: COLORS.dark}}>
+              {liked ? 'Unlike' : 'Like'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleCopy}>

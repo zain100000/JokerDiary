@@ -210,6 +210,22 @@ const removeLikedQuote = async (req, res, next) => {
   }
 };
 
+const getLikedQuotes = async (req, res, next) => {
+  try {
+    const likedQuotes = await Quote.find({ liked: true });
+
+    if (!likedQuotes || likedQuotes.length === 0) {
+      return res.status(404).json({ message: "No Liked Quotes found!" });
+    }
+
+    res.status(200).json({ LikedQuotes: likedQuotes });
+  } catch (error) {
+    console.error("Error fetching liked quotes:", error);
+    const err = new HttpError("Failed to fetch liked quotes!", 500);
+    return next(err);
+  }
+};
+
 module.exports = {
   addQuote,
   getQuotes,
@@ -220,4 +236,5 @@ module.exports = {
   getRandomQuotes,
   addLikedQuote,
   removeLikedQuote,
+  getLikedQuotes,
 };

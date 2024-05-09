@@ -20,4 +20,6 @@ router.post("/likeQuote/:id", quoteController.addLikedQuote);
 
 router.post("/unlikeQuote/:id", quoteController.removeLikedQuote);
 
+router.get("/getLikedQuotes", quoteController.getLikedQuotes);
+
 module.exports = router;
