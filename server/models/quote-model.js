@@ -10,6 +10,14 @@ const quoteSchema = new mongoose.Schema({
   category: {
     type: String,
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  quoteOfDayUpdatedAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const Quote = mongoose.model("Quote", quoteSchema);
