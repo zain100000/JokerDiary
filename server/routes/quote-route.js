@@ -10,6 +10,8 @@ router.get("/getQuotes/:id", quoteController.getQuotesById);
 
 router.get("/latestQuotes", quoteController.getLatestQuotes);
 
+router.get("/getRandomQuotes", quoteController.getRandomQuotes);
+
 router.patch("/updateQuotes/:id", quoteController.updateQuotes);
 
 router.delete("/removeQuotes/:id", quoteController.deleteQuote);

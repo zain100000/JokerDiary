@@ -7,6 +7,7 @@ import Home from '../screens/Home';
 import Contact from '../screens/Contact';
 import PrivacyPolicy from '../screens/PrivacyPolicy';
 import LatestQuotes from '../screens/LatestQuotes';
+import QuoteOfTheDay from '../screens/QuoteOfDay';
 
 const Drawer = createDrawerNavigator();
 
@@ -17,7 +18,7 @@ const DrawerNavigator = () => {
       screenOptions={{
         drawerActiveBackgroundColor: COLORS.dark,
         drawerActiveTintColor: '#fff',
-        headerTitle: 'Jokers Diary Quotes',
+        headerTitle: "Joker's Diary Quotes",
       }}>
       <Drawer.Screen
         name="Home"
@@ -26,6 +27,27 @@ const DrawerNavigator = () => {
           drawerIcon: ({color}) => (
             <MaterialCommunityIcons
               name="home-outline"
+              size={22}
+              color={color}
+            />
+          ),
+          drawerLabelStyle: {marginLeft: -20, fontWeight: '700', fontSize: 16},
+
+          headerStyle: {
+            height: 80,
+            backgroundColor: COLORS.white,
+          },
+          headerTitleStyle: {fontSize: 25, fontWeight: '600'},
+        }}
+      />
+
+      <Drawer.Screen
+        name="Quote Of The Day"
+        component={QuoteOfTheDay}
+        options={{
+          drawerIcon: ({color}) => (
+            <MaterialCommunityIcons
+              name="comment-quote-outline"
               size={22}
               color={color}
             />
