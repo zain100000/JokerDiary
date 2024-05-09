@@ -15,9 +15,9 @@ const QuoteOfTheDay = () => {
   const fetchQuoteOfTheDay = () => {
     setLoading(true);
     axios
-      .get('https://jokerdiary.onrender.com/api/quotes/randomQuote')
+      .get('https://jokerdiary.onrender.com/api/quotes/getRandomQuotes')
       .then(response => {
-        setQuote(response.data.quote);
+        setQuote(response.data.Quote);
         setLoading(false);
       })
       .catch(error => {

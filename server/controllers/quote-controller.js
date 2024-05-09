@@ -100,7 +100,7 @@ const getRandomQuotes = async (req, res, next) => {
       return res.status(404).json({ message: "No Quotes Found!" });
     }
 
-    res.status(200).json({ quote: randomQuote });
+    res.status(200).json({ Quote: randomQuote });
   } catch (error) {
     console.error("Error fetching random quote:", error);
     const err = new HttpError("Failed to fetch random quote!", 500);
