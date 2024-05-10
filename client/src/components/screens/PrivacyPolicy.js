@@ -6,8 +6,6 @@ const PrivacyPolicy = () => {
   return (
     <SafeAreaView>
       <ScrollView style={styles.container}>
-        <Text style={styles.title}>Privacy Policy</Text>
-
         <Text style={styles.sectionTitle}>
           This privacy policy applies to the Joker Diary app (hereby referred to
           as "Application") for mobile devices that was created by Zeeshan Dogar
@@ -141,6 +139,7 @@ const PrivacyPolicy = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+    marginBottom: 50,
   },
 
   title: {
@@ -153,7 +152,7 @@ const styles = StyleSheet.create({
 
   sectionTitle: {
     fontSize: 18,
-    marginBottom: 10,
+    marginBottom: 20,
     color: COLORS.dark,
     textAlign: 'justify',
   },
