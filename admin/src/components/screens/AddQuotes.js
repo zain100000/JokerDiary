@@ -133,6 +133,7 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     fontSize: 16,
     fontWeight: 'bold',
+    color:'#000'
   },
 
   pickerContainer: {
