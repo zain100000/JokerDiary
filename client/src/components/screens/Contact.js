@@ -13,9 +13,11 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
+import {useNavigation} from '@react-navigation/native';
 import COLORS from '../consts/Colors';
 
 const Contact = () => {
+  const navigation = useNavigation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [mobile, setMobile] = useState('');
@@ -42,6 +44,7 @@ const Contact = () => {
 
       if (response.status >= 200 && response.status < 300) {
         alert('Thank You! Your Response Has Been Submitted!');
+        navigation.navigate("Joker's Diary");
       } else {
         alert('Error Submitting Contact Form!');
       }

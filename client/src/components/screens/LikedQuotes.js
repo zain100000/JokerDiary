@@ -36,10 +36,20 @@ const LikedQuotes = () => {
       });
   };
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true);
-    setLikedQuotes([]);
-    fetchLikedQuotes();
+
+    try {
+      const response = await axios.get(
+        `https://jokerdiary.onrender.com/api/quotes/getLikedQuotes`,
+      );
+      const result = response.data.LikedQuotes;
+      setLikedQuotes(result);
+    } catch (error) {
+      console.error('Error fetching new data:', error);
+    }
+
+    setRefreshing(false);
   };
 
   if (loading) {
@@ -52,25 +62,20 @@ const LikedQuotes = () => {
 
   return (
     <View style={styles.container}>
-      {likedQuotes && likedQuotes.length > 0 ? (
-        <FlatList
-          data={likedQuotes}
-          renderItem={({item}) => <QuoteCard quote={item} />}
-          keyExtractor={item => item.id.toString()}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={[COLORS.dark]}
-            />
-          }
-          showsVerticalScrollIndicator={false}
-        />
-      ) : (
-        <View style={styles.noLikeQuotesContainer}>
-          <Text style={styles.noLikeQuotes}>No Like Quotes </Text>
-        </View>
-      )}
+      <FlatList
+        data={likedQuotes}
+        renderItem={({item}) => <QuoteCard quote={item} />}
+        keyExtractor={item => item.id.toString()}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        ListEmptyComponent={
+          <View style={styles.noLikeQuotesContainer}>
+            <Text style={styles.noLikeQuotes}>No Like Quotes </Text>
+          </View>
+        }
+      />
     </View>
   );
 };
@@ -82,6 +87,7 @@ const styles = StyleSheet.create({
   },
 
   loadingContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -90,6 +96,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 300,
   },
 
   noLikeQuotes: {

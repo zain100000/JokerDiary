@@ -19,10 +19,9 @@ const DrawerNavigator = () => {
       screenOptions={{
         drawerActiveBackgroundColor: COLORS.dark,
         drawerActiveTintColor: '#fff',
-        headerTitle: "Joker's Diary Quotes",
       }}>
       <Drawer.Screen
-        name="Home"
+        name="Joker's Diary"
         component={Home}
         options={{
           drawerIcon: ({color}) => (

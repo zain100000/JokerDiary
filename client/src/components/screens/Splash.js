@@ -9,7 +9,7 @@ const Splash = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      navigation.replace('Home');
+      navigation.replace("Joker's Diary");
     }, 2000);
   }, []);
 

@@ -1,17 +1,17 @@
 import React, {useState, useEffect} from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   FlatList,
   ActivityIndicator,
+  Text,
   RefreshControl,
 } from 'react-native';
 import axios from 'axios';
 import {QuoteCard} from '../otherComponents/quote/QuoteScreen';
 import COLORS from '../consts/Colors';
 
-const LatestQuotesScreen = () => {
+const LatestQuotes = () => {
   const [latestQuotes, setLatestQuotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -36,37 +36,46 @@ const LatestQuotesScreen = () => {
       });
   };
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true);
-    setLatestQuotes([]); // Clear existing quotes before fetching new ones
-    fetchLatestQuotes();
+
+    try {
+      const response = await axios.get(
+        `https://jokerdiary.onrender.com/api/quotes/latestQuotes`,
+      );
+      const result = response.data.LatestQuotes;
+      setLatestQuotes(result);
+    } catch (error) {
+      console.error('Error fetching new data:', error);
+    }
+
+    setRefreshing(false);
   };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <ActivityIndicator size="large" color={COLORS.dark} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      {loading ? (
-        <View style={[styles.loadingContainer, styles.container]}>
-          <ActivityIndicator size="large" color={COLORS.dark} />
-        </View>
-      ) : latestQuotes.length === 0 ? (
-        <View style={[styles.loadingContainer, styles.container]}>
-          <Text style={styles.noQuotes}>No Latest Quotes</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={latestQuotes}
-          renderItem={({item}) => <QuoteCard quote={item} />}
-          keyExtractor={item => item.id.toString()}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={[COLORS.dark]}
-              tintColor={COLORS.dark}
-            />
-          }
-        />
-      )}
+      <FlatList
+        data={latestQuotes}
+        renderItem={({item}) => <QuoteCard quote={item} />}
+        keyExtractor={item => item.id.toString()}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        ListEmptyComponent={
+          <View style={styles.noLatestQuotesContainer}>
+            <Text style={styles.noLatestQuotes}>No Latest Quotes </Text>
+          </View>
+        }
+      />
     </View>
   );
 };
@@ -74,14 +83,23 @@ const LatestQuotesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
   },
 
   loadingContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
 
-  noQuotes: {
+  noLatestQuotesContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 300,
+  },
+
+  noLatestQuotes: {
     fontSize: 20,
     color: COLORS.dark,
     textAlign: 'center',
@@ -89,4 +107,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LatestQuotesScreen;
+export default LatestQuotes;

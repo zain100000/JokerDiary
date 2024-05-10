@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   Share,
   NativeModules,
-  Platform,
   SafeAreaView,
   RefreshControl,
   TextInput,
@@ -16,19 +15,18 @@ import {
 import axios from 'axios';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import COLORS from '../../consts/Colors';
+import {useNavigation} from '@react-navigation/native';
 
 const {Clipboard} = NativeModules;
 
-export const QuoteCard = ({quote, onLikePress, onUnLikePress}) => {
+export const QuoteCard = ({quote}) => {
   const [copied, setCopied] = useState(false);
   const [liked, setLiked] = useState(quote.liked);
-  const [unliked, setUnLiked] = useState(quote.unliked);
 
   const handleCopy = () => {
     copyToClipboard(quote.title);
     setCopied(true);
   };
-
   const handleShare = async () => {
     try {
       await Share.share({
@@ -38,11 +36,10 @@ export const QuoteCard = ({quote, onLikePress, onUnLikePress}) => {
       console.error('Error sharing quote:', error.message);
     }
   };
-
   const handleLikePress = async () => {
     try {
       const response = await axios.post(
-        `https://jokerdiary.onrender.com/api/quotes/likeQuote/${quote._id}`, // Add / before quote._id
+        `https://jokerdiary.onrender.com/api/quotes/likeQuote/${quote._id}`,
       );
       if (response.status >= 200 && response.status < 300) {
         alert('Quote Liked!');
@@ -51,26 +48,8 @@ export const QuoteCard = ({quote, onLikePress, onUnLikePress}) => {
       console.error('Error liking quote:', error);
     }
   };
-
-  const handleUnLikePress = async () => {
-    try {
-      const response = await axios.post(
-        `https://jokerdiary.onrender.com/api/quotes/unlikeQuote/${quote._id}`,
-      );
-      if (response.status >= 200 && response.status < 300) {
-        alert('Quote Unliked!');
-      }
-    } catch (error) {
-      console.error('Error unliking quote:', error);
-    }
-  };
-
   const copyToClipboard = text => {
-    if (Platform.OS === 'android') {
-      Clipboard.setString(text);
-    } else {
-      Clipboard.setString(text);
-    }
+    Clipboard.setString(text);
   };
 
   return (
@@ -81,9 +60,7 @@ export const QuoteCard = ({quote, onLikePress, onUnLikePress}) => {
           <Text style={styles.quote}>{quote.title}</Text>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={liked ? handleUnLikePress : handleLikePress}>
+          <TouchableOpacity style={styles.button} onPress={handleLikePress}>
             <MaterialCommunityIcon
               name={liked ? 'heart' : 'heart-outline'}
               size={30}
@@ -96,7 +73,7 @@ export const QuoteCard = ({quote, onLikePress, onUnLikePress}) => {
                 color: COLORS.dark,
                 textAlign: 'center',
               }}>
-              {liked ? 'Unlike' : 'Like'}
+              Like
             </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleCopy}>
@@ -139,6 +116,7 @@ export const QuoteCard = ({quote, onLikePress, onUnLikePress}) => {
 
 const QuoteScreen = ({route}) => {
   const {category} = route.params;
+  const navigation = useNavigation();
   const [quotes, setQuotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -166,14 +144,25 @@ const QuoteScreen = ({route}) => {
       });
   };
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchQuotes();
-  };
-
   const filteredQuotes = quotes.filter(quote =>
     quote.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+
+    try {
+      const response = await axios.get(
+        `https://jokerdiary.onrender.com/api/quotes/getQuotes?category=${category}`,
+      );
+      const result = response.data.Quote;
+      setQuotes(result);
+    } catch (error) {
+      console.error('Error fetching new data:', error);
+    }
+
+    setRefreshing(false);
+  };
 
   if (loading) {
     return (
@@ -183,8 +172,22 @@ const QuoteScreen = ({route}) => {
     );
   }
 
+  const handleBack = () => {
+    navigation.goBack();
+  };
+
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={handleBack}>
+          <MaterialCommunityIcon
+            name="chevron-left"
+            size={30}
+            color={COLORS.dark}
+          />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>{category}</Text>
+      </View>
       <TextInput
         style={styles.input}
         onChangeText={text => setSearchQuery(text)}
@@ -192,27 +195,24 @@ const QuoteScreen = ({route}) => {
         placeholder="Search Quotes"
         placeholderTextColor={COLORS.dark}
       />
-      {filteredQuotes.length > 0 ? (
-        <FlatList
-          data={filteredQuotes}
-          renderItem={({item}) => <QuoteCard quote={item} />}
-          keyExtractor={item => item.id.toString()}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={[COLORS.dark]}
-            />
-          }
-          showsVerticalScrollIndicator={false}
-        />
-      ) : (
-        <View style={styles.noQuotesContainer}>
-          <Text style={styles.noQuotes}>
-            {category ? `No Quotes Related to ${category}` : 'No Quotes Found'}
-          </Text>
-        </View>
-      )}
+      <FlatList
+        showsVerticalScrollIndicator={false}
+        data={filteredQuotes}
+        keyExtractor={item => item.id.toString()}
+        renderItem={({item}) => <QuoteCard quote={item} />}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        ListEmptyComponent={
+          <View style={styles.noQuotesContainer}>
+            <Text style={styles.noQuotes}>
+              {category
+                ? `No Quotes Related to ${category}`
+                : 'No Quotes Found'}
+            </Text>
+          </View>
+        }
+      />
     </View>
   );
 };
@@ -221,6 +221,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+  },
+
+  header: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    padding: 5,
+  },
+
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: COLORS.dark,
   },
 
   loadingContainer: {
@@ -240,50 +252,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  card: {
-    backgroundColor: COLORS.white,
-    padding: 5,
-    margin: 15,
-  },
-
-  quoteContainer: {
-    backgroundColor: '#333',
-    padding: 80,
-    borderRadius: 10,
-    marginBottom: 20,
-  },
-
-  quote: {
-    fontSize: 22,
-    color: '#fff',
-    width: '100%',
-    textAlign: 'center',
-    lineHeight: 30,
-  },
-
-  category: {
-    color: COLORS.dark,
-    fontSize: 16,
-    fontWeight: 'bold',
-    paddingHorizontal: 5,
-    padding: 5,
-  },
-
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 10,
-  },
-
-  button: {
-    padding: 10,
-    borderRadius: 5,
-  },
-
   noQuotesContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 300,
   },
 
   noQuotes: {

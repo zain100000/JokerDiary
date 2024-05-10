@@ -12,7 +12,7 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name="Splash" component={Splash} />
-        <Stack.Screen name="Home" component={DrawerNavigator} />
+        <Stack.Screen name="Joker's Diary" component={DrawerNavigator} />
         <Stack.Screen name="QuoteScreen" component={QuoteScreen} />
       </Stack.Navigator>
     </NavigationContainer>
