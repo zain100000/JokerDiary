@@ -19,7 +19,7 @@ import {useNavigation} from '@react-navigation/native';
 
 const {Clipboard} = NativeModules;
 
-export const QuoteCard = ({quote}) => {
+export const QuoteCard = ({quote, onUnlike}) => {
   const [copied, setCopied] = useState(false);
   const [liked, setLiked] = useState(quote.liked);
 
@@ -27,6 +27,7 @@ export const QuoteCard = ({quote}) => {
     copyToClipboard(quote.title);
     setCopied(true);
   };
+
   const handleShare = async () => {
     try {
       await Share.share({
@@ -36,18 +37,34 @@ export const QuoteCard = ({quote}) => {
       console.error('Error sharing quote:', error.message);
     }
   };
+
   const handleLikePress = async () => {
     try {
       const response = await axios.post(
         `https://jokerdiary.onrender.com/api/quotes/likeQuote/${quote._id}`,
       );
       if (response.status >= 200 && response.status < 300) {
-        alert('Quote Liked!');
+        setLiked(true);
       }
     } catch (error) {
       console.error('Error liking quote:', error);
     }
   };
+
+  const handleUnLikePress = async () => {
+    try {
+      const response = await axios.post(
+        `https://jokerdiary.onrender.com/api/quotes/unlikeQuote/${quote._id}`,
+      );
+      if (response.status >= 200 && response.status < 300) {
+        setLiked(false);
+        onUnlike(quote._id);
+      }
+    } catch (error) {
+      console.error('Error unliking quote:', error);
+    }
+  };
+
   const copyToClipboard = text => {
     Clipboard.setString(text);
   };
@@ -60,7 +77,9 @@ export const QuoteCard = ({quote}) => {
           <Text style={styles.quote}>{quote.title}</Text>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleLikePress}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={liked ? handleUnLikePress : handleLikePress}>
             <MaterialCommunityIcon
               name={liked ? 'heart' : 'heart-outline'}
               size={30}
@@ -73,9 +92,10 @@ export const QuoteCard = ({quote}) => {
                 color: COLORS.dark,
                 textAlign: 'center',
               }}>
-              Like
+              {liked ? 'Like' : 'Like'}
             </Text>
           </TouchableOpacity>
+
           <TouchableOpacity style={styles.button} onPress={handleCopy}>
             <MaterialCommunityIcon
               name={copied ? 'check-circle' : 'clipboard-outline'}
@@ -89,9 +109,10 @@ export const QuoteCard = ({quote}) => {
                 color: copied ? COLORS.primary : COLORS.dark,
                 textAlign: 'center',
               }}>
-              {copied ? 'Copied' : 'Copy'}
+              {copied ? 'Copy' : 'Copy'}
             </Text>
           </TouchableOpacity>
+
           <TouchableOpacity style={styles.button} onPress={handleShare}>
             <MaterialCommunityIcon
               name="share-outline"
@@ -107,7 +128,7 @@ export const QuoteCard = ({quote}) => {
               }}>
               Share
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity>          
         </View>
       </View>
     </SafeAreaView>
@@ -240,6 +261,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
+  card: {
+    flex: 1,
+    borderRadius: 5,
+    backgroundColor: COLORS.white,
+    padding: 20,
+  },
+
   input: {
     height: 40,
     borderColor: COLORS.dark,
@@ -250,6 +278,34 @@ const styles = StyleSheet.create({
     color: COLORS.dark,
     fontSize: 16,
     fontWeight: '600',
+  },
+
+  quoteContainer: {
+    backgroundColor: COLORS.dark,
+    padding: 100,
+    marginBottom: 30,
+    borderRadius: 10,
+  },
+
+  buttonContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+
+  category: {
+    color: COLORS.dark,
+    fontSize: 16,
+    marginBottom: 5,
+    left: 5,
+  },
+
+  quote: {
+    color: COLORS.white,
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 
   noQuotesContainer: {

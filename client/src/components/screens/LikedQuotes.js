@@ -36,6 +36,12 @@ const LikedQuotes = () => {
       });
   };
 
+  const removeLikedQuote = quoteId => {
+    setLikedQuotes(prevQuotes =>
+      prevQuotes.filter(quote => quote._id !== quoteId),
+    );
+  };
+
   const onRefresh = async () => {
     setRefreshing(true);
 
@@ -64,7 +70,9 @@ const LikedQuotes = () => {
     <View style={styles.container}>
       <FlatList
         data={likedQuotes}
-        renderItem={({item}) => <QuoteCard quote={item} />}
+        renderItem={({item}) => (
+          <QuoteCard quote={item} onUnlike={removeLikedQuote} />
+        )}
         keyExtractor={item => item.id.toString()}
         showsVerticalScrollIndicator={false}
         refreshControl={
