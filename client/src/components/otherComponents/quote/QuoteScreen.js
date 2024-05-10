@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   },
 
   headerTitle: {
-    fontSize: 20,
+    fontSize: 23,
     fontWeight: 'bold',
     color: COLORS.dark,
   },
