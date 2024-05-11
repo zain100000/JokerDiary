@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Alert,
   StyleSheet,
+  Image,
 } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import axios from 'axios';
@@ -18,7 +19,6 @@ import {useNavigation} from '@react-navigation/native';
 const QuotesLists = () => {
   const [data, setData] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const [deleting, setDeleting] = useState('');
   const [selectAll, setSelectAll] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -44,12 +44,6 @@ const QuotesLists = () => {
     getApiData();
   }, []);
 
-  const filterData = () => {
-    return data.filter(item =>
-      item.title.toLowerCase().includes(searchText.toLowerCase()),
-    );
-  };
-
   const onRefresh = async () => {
     setRefreshing(true);
 
@@ -64,10 +58,6 @@ const QuotesLists = () => {
     }
 
     setRefreshing(false);
-  };
-
-  const handleUpdateQuote = selectedQuote => {
-    navigation.navigate('Update Quote', {selectedQuote});
   };
 
   const handleSelectAll = () => {
@@ -153,14 +143,6 @@ const QuotesLists = () => {
           disabled={selectedItems.length === 0}>
           <FontAwesome5 name={'trash'} size={25} color={'red'} />
         </TouchableOpacity>
-
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search Quote By Title"
-          value={searchText}
-          placeholderTextColor={'#00bcd4'}
-          onChangeText={text => setSearchText(text)}
-        />
       </View>
 
       <View style={styles.listHeader}>
@@ -171,13 +153,13 @@ const QuotesLists = () => {
             color={selectAll ? 'blue' : '#000'}
           />
         </TouchableOpacity>
-        <Text style={styles.headerText}>Title</Text>
+        <Text style={styles.headerText}>Quote</Text>
         <Text style={styles.headerText}>Category</Text>
         <Text style={styles.headerText}>Actions</Text>
       </View>
 
       <FlatList
-        data={filterData()}
+        data={data}
         keyExtractor={(item, index) =>
           item.id ? item.id.toString() : index.toString()
         }
@@ -193,15 +175,11 @@ const QuotesLists = () => {
                 onPress={() => handleIndividualCheckbox(item._id)}
               />
             </TouchableOpacity>
-            <Text style={styles.titleText}>{item.title}</Text>
+            <Image source={{uri: item.image}} style={styles.image} />
             <View>
               <Text style={styles.categoryText}>{item.category}</Text>
             </View>
             <View style={styles.actions}>
-              <TouchableOpacity onPress={() => handleUpdateQuote(item)}>
-                <FontAwesome5 name="pencil-alt" size={20} color={'#000'} />
-              </TouchableOpacity>
-
               <TouchableOpacity
                 onPress={() => handleIndividualDelete(item._id)}>
                 <FontAwesome5 name={'trash'} size={20} color={'red'} />
@@ -215,7 +193,7 @@ const QuotesLists = () => {
       />
       <View style={{flex: 1, alignItems: 'center'}}>
         {isLoading && <ActivityIndicator size="large" color="blue" />}
-        {!filterData().length && !isLoading && (
+        {!data.length && !isLoading && (
           <Text style={{fontSize: 18, fontWeight: 'bold', color: '#000'}}>
             No Quotes!
           </Text>
@@ -268,27 +246,33 @@ const styles = StyleSheet.create({
 
   listItem: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 10,
     marginHorizontal: 5,
     marginVertical: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingBottom: 10,
   },
 
-  titleText: {
-    color: '#000',
-    marginLeft: -30,
+  image: {
+    width: 100,
+    height: 100,
+    resizeMode: 'contain',
+    right: 35,
   },
 
   categoryText: {
     fontWeight: 'bold',
-    color: '#777',
+    color: '#000',
+    right: 55,
+    fontSize: 18,
   },
 
   actions: {
-    flexDirection: 'row',
-    gap: 20,
     alignItems: 'center',
+    right: 25,
   },
 });
 

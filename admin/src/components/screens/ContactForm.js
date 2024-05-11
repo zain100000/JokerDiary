@@ -156,7 +156,7 @@ const ContactForm = () => {
 
         <TextInput
           style={styles.searchInput}
-          placeholder="Search Form By Title"
+          placeholder="Search Form By Name"
           value={searchText}
           placeholderTextColor={'#00bcd4'}
           onChangeText={text => setSearchText(text)}
@@ -185,7 +185,7 @@ const ContactForm = () => {
         }
         renderItem={({item}) => (
           <View style={styles.listItem}>
-            <TouchableOpacity>
+            <TouchableOpacity style={{top: 14}}>
               <FontAwesome5
                 name={
                   selectedItems.includes(item._id) ? 'check-square' : 'square'
@@ -266,8 +266,6 @@ const styles = StyleSheet.create({
 
   listItem: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     marginVertical: 5,
     paddingHorizontal: 10,
   },
@@ -275,30 +273,35 @@ const styles = StyleSheet.create({
   itemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     flex: 1,
   },
 
   nameText: {
-    width: '25%',
-    left: 20,
+    color: '#000',
+    left: 15,
   },
 
   emailText: {
-    width: '25%',
-    right: 20,
+    color: '#000',
+    width: 80,
   },
 
   mobileText: {
-    width: '20%',
-    right: 20,
+    color: '#000',
+    width: 50,
+    right: 60,
   },
 
   messageText: {
-    width: '30%',
+    color: '#000',
+    right: 70,
+    width: 50,
   },
 
   actions: {
-    right: 20,
+    right: 25,
+    top: 15,
   },
 });
 

@@ -4,13 +4,14 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import AddQuotes from '../screens/AddQuotes';
 import QuotesLists from '../screens/QuotesLists';
 import ContactForm from '../screens/ContactForm';
-import UpdateQuote from '../screens/UpdateQuote';
 
 const Tab = createMaterialBottomTabNavigator();
 
 const BottomNavigator = () => {
   return (
+
     <Tab.Navigator activeColor="#e91e63" barStyle={{backgroundColor: '#000'}}>
+      
       <Tab.Screen
         name="Add Quotes"
         component={AddQuotes}

@@ -11,6 +11,7 @@ import {
   SafeAreaView,
   RefreshControl,
   TextInput,
+  Image,
 } from 'react-native';
 import axios from 'axios';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -21,6 +22,7 @@ const {Clipboard} = NativeModules;
 
 export const QuoteCard = ({quote, onUnlike}) => {
   const [copied, setCopied] = useState(false);
+  const [image, setImage] = useState('');
   const [liked, setLiked] = useState(quote.liked);
 
   const handleCopy = () => {
@@ -74,8 +76,13 @@ export const QuoteCard = ({quote, onUnlike}) => {
       <View style={styles.card}>
         <Text style={styles.category}>{quote.category}</Text>
         <View style={styles.quoteContainer}>
-          <Text style={styles.quote}>{quote.title}</Text>
+          <Image
+            source={{uri: quote.image}}
+            style={styles.image}
+            resizeMode="contain"
+          />
         </View>
+
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.button}
@@ -165,10 +172,6 @@ const QuoteScreen = ({route}) => {
       });
   };
 
-  const filteredQuotes = quotes.filter(quote =>
-    quote.title.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
-
   const onRefresh = async () => {
     setRefreshing(true);
 
@@ -209,16 +212,9 @@ const QuoteScreen = ({route}) => {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{category}</Text>
       </View>
-      <TextInput
-        style={styles.input}
-        onChangeText={text => setSearchQuery(text)}
-        value={searchQuery}
-        placeholder="Search Quotes"
-        placeholderTextColor={COLORS.dark}
-      />
       <FlatList
         showsVerticalScrollIndicator={false}
-        data={filteredQuotes}
+        data={quotes}
         keyExtractor={item => item.id.toString()}
         renderItem={({item}) => <QuoteCard quote={item} />}
         refreshControl={
@@ -265,26 +261,19 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 5,
     backgroundColor: COLORS.white,
-    padding: 20,
-  },
-
-  input: {
-    height: 40,
-    borderColor: COLORS.dark,
-    borderWidth: 1,
-    margin: 10,
-    paddingHorizontal: 15,
-    borderRadius: 50,
-    color: COLORS.dark,
-    fontSize: 16,
-    fontWeight: '600',
+    padding: 10,
   },
 
   quoteContainer: {
-    backgroundColor: COLORS.dark,
-    padding: 50,
-    marginBottom: 30,
+    width: '100%',
+    aspectRatio: 2 / 3,
+    objectFit: 'contain',
     borderRadius: 10,
+    overflow: 'hidden',
+  },
+
+  image: {
+    flex: 1,
   },
 
   buttonContainer: {
@@ -299,13 +288,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 5,
     left: 5,
-  },
-
-  quote: {
-    color: COLORS.white,
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
 
   noQuotesContainer: {

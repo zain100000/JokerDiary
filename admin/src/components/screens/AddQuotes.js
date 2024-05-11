@@ -2,20 +2,23 @@ import React, {useState} from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   ActivityIndicator,
   SafeAreaView,
   StyleSheet,
+  Image,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
+import DocumentPicker from 'react-native-document-picker';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
 
 const AddProduct = () => {
+  const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const [addQuote, setAddQuote] = useState({
-    title: '',
+    image: '',
     category: '',
   });
 
@@ -23,25 +26,44 @@ const AddProduct = () => {
     setAddQuote({...addQuote, [name]: value});
   };
 
+  const imageHandler = async () => {
+    try {
+      const res = await DocumentPicker.pickSingle({
+        type: [DocumentPicker.types.images],
+      });
+      setImage(res);
+      setAddQuote({...addQuote, image: res});
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const clearFields = () => {
     setAddQuote({
-      title: '',
+      image: '',
       category: '',
     });
+    setImage(null);
   };
 
   const handleAddQuotes = async () => {
     try {
       setLoading(true);
 
-      const quoteData = {...addQuote};
+      const formData = new FormData();
+      formData.append('image', {
+        uri: image.uri,
+        type: image.type,
+        name: image.name,
+      });
+      formData.append('category', addQuote.category);
 
       const addQuoteResponse = await axios.post(
         'https://jokerdiary.onrender.com/api/quotes/addQuotes',
-        quoteData,
+        formData,
         {
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'multipart/form-data',
           },
         },
       );
@@ -63,13 +85,10 @@ const AddProduct = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Title"
-          placeholderTextColor="#000"
-          value={addQuote.title}
-          onChangeText={text => QuoteHandler('title', text)}
-        />
+        <TouchableOpacity onPress={imageHandler} style={styles.uploadContainer}>
+          <MaterialCommunityIcons name="upload-outline" size={45} />
+          <Text style={styles.uploadText}>Upload Quote</Text>
+        </TouchableOpacity>
 
         <View style={styles.pickerContainer}>
           <Picker
@@ -100,6 +119,14 @@ const AddProduct = () => {
           </Picker>
         </View>
 
+        <View style={styles.imageContainer}>
+          {image ? (
+            <Image source={{uri: image.uri}} style={styles.image} />
+          ) : (
+            <Text style={{marginBottom: 50}}>No Files Selected</Text>
+          )}
+        </View>
+
         <TouchableOpacity style={styles.button} onPress={handleAddQuotes}>
           {loading ? (
             <ActivityIndicator color={'#fff'} />
@@ -117,35 +144,51 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f0f0f0',
   },
 
   inputContainer: {
     width: '80%',
+    backgroundColor: '#000',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
   },
 
-  input: {
-    height: 40,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#000',
-    borderRadius: 5,
-    paddingLeft: 10,
-    paddingRight: 10,
+  uploadContainer: {
+    marginBottom: 50,
+    alignItems: 'center',
+  },
+
+  uploadText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color:'#000'
+    marginTop: 10,
   },
 
   pickerContainer: {
-    marginBottom: 20,
+    marginBottom: 80,
     borderWidth: 1,
-    borderColor: '#000',
+    borderColor: '#fff',
     borderRadius: 5,
     overflow: 'hidden',
+    width: '100%',
   },
 
   picker: {
-    color: '#000',
+    color: '#fff',
+    width: '100%',
+  },
+
+  imageContainer: {
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+
+  image: {
+    width: 200,
+    height: 200,
+    resizeMode: 'contain',
   },
 
   button: {
@@ -154,6 +197,7 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
+    width: '100%',
   },
 
   buttonText: {
