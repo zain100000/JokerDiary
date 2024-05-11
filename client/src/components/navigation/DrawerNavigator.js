@@ -21,7 +21,7 @@ const DrawerNavigator = () => {
         drawerActiveTintColor: '#fff',
       }}>
       <Drawer.Screen
-        name="Joker's Diary"
+        name="Joker Diary"
         component={Home}
         options={{
           drawerIcon: ({color}) => (
