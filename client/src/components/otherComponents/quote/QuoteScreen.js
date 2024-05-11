@@ -7,10 +7,8 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Share,
-  NativeModules,
   SafeAreaView,
   RefreshControl,
-  TextInput,
   Image,
 } from 'react-native';
 import axios from 'axios';
@@ -55,20 +53,6 @@ export const QuoteCard = ({quote, onUnlike}) => {
       }
     } catch (error) {
       console.error('Error unliking quote:', error);
-    }
-  };
-
-  const handleSaveImage = async () => {
-    try {
-      const {status} = await MediaLibrary.requestPermissionsAsync();
-      if (status === 'granted') {
-        const asset = await MediaLibrary.createAssetAsync(quote.image);
-        if (asset) {
-          console.log('Image saved successfully!');
-        }
-      }
-    } catch (error) {
-      console.error('Error saving image:', error);
     }
   };
 
