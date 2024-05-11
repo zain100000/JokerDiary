@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: COLORS.white,
     padding: 10,
-    gap: 20,
+    marginBottom: 40,
   },
 
   quoteContainer: {
