@@ -1,5 +1,7 @@
 const HttpError = require("../models/http-error");
 const Quote = require("../models/quote-model");
+const fileUpload = require("../middleware/file-upload");
+const { v2: cloudinary } = require("cloudinary");
 
 const addQuote = async (req, res, next) => {
   try {
@@ -13,12 +15,18 @@ const addQuote = async (req, res, next) => {
       id = 1;
     }
 
-    const { title, category } = req.body;
+    const { category } = req.body;
+
+    if (!req.file) {
+      throw new HttpError("No image file provided!", 400);
+    }
+
+    const ImgUrl = await fileUpload.cloudinaryImageUpload(req.file);
 
     const quote = new Quote({
       id,
-      title,
       category,
+      image: ImgUrl,
     });
 
     await quote.save();
@@ -76,7 +84,7 @@ const getQuotesById = async (req, res, next) => {
 
 const getLatestQuotes = async (req, res, next) => {
   try {
-    const latestQuotes = await Quote.find().sort({ _id: -1 }).limit(10); // Fetch latest 10 quotes sorted by creation date
+    const latestQuotes = await Quote.find().sort({ _id: -1 }).limit(10);
 
     if (!latestQuotes || latestQuotes.length === 0) {
       return res.status(404).json({ message: "No Latest Quotes found!" });
@@ -108,46 +116,6 @@ const getRandomQuotes = async (req, res, next) => {
   }
 };
 
-const updateQuotes = async (req, res, next) => {
-  const quoteId = req.params.id;
-
-  if (!quoteId) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Invalid Quote ID" });
-  }
-
-  try {
-    let quote = await Quote.findById(quoteId);
-
-    if (!quote) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Quote not found." });
-    }
-
-    if (
-      req.headers["content-type"] &&
-      req.headers["content-type"].includes("application/json")
-    ) {
-      if (req.body.title) quote.title = req.body.title;
-      if (req.body.category) quote.category = req.body.category;
-    } else {
-      quote = { ...quote, ...req.body };
-    }
-
-    await quote.save();
-
-    res
-      .status(200)
-      .json({ success: true, message: "Quote Updated Successfully." });
-  } catch (err) {
-    console.error("Error updating Quote:", err);
-    const error = new HttpError("Failed To Update Quote!", 500);
-    return next(error);
-  }
-};
-
 const deleteQuote = async (req, res, next) => {
   const quoteId = req.params.id;
 
@@ -160,6 +128,25 @@ const deleteQuote = async (req, res, next) => {
 
     if (!quoteId) {
       return res.status(404).json({ message: "Quote not found." });
+    }
+
+    if (quote.image) {
+      try {
+        const publicId = quote.image
+          .split("/")
+          .slice(-4)
+          .join("/")
+          .split(".")[0];
+
+        const deletionResult = await cloudinary.uploader.destroy(publicId);
+        if (deletionResult.result === "ok") {
+          console.log(`Quote  deleted from Cloudinary: ${publicId}`);
+        } else {
+          console.error(`Failed to delete Quote  from Cloudinary: ${publicId}`);
+        }
+      } catch (err) {
+        console.error("Error deleting Quote  from Cloudinary:", err);
+      }
     }
 
     await Quote.deleteOne({ _id: quoteId });
@@ -230,7 +217,6 @@ module.exports = {
   addQuote,
   getQuotes,
   getQuotesById,
-  updateQuotes,
   deleteQuote,
   getLatestQuotes,
   getRandomQuotes,

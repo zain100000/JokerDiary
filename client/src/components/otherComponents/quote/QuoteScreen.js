@@ -128,7 +128,7 @@ export const QuoteCard = ({quote, onUnlike}) => {
               }}>
               Share
             </Text>
-          </TouchableOpacity>          
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
 
   quoteContainer: {
     backgroundColor: COLORS.dark,
-    padding: 100,
+    padding: 50,
     marginBottom: 30,
     borderRadius: 10,
   },
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
 
   quote: {
     color: COLORS.white,
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
   },

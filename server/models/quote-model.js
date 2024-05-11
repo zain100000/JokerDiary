@@ -4,7 +4,7 @@ const quoteSchema = new mongoose.Schema({
   id: {
     type: Number,
   },
-  title: {
+  image: {
     type: String,
   },
   category: {
