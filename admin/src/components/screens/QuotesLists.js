@@ -254,20 +254,22 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     paddingBottom: 10,
+    textAlign: 'center',
   },
 
   image: {
-    width: 100,
-    height: 100,
+    width: '30%',
+    right: 30,
     resizeMode: 'contain',
-    right: 35,
+    aspectRatio: '2/3',
   },
 
   categoryText: {
-    fontWeight: 'bold',
+    fontWeight: 'normal',
     color: '#000',
-    right: 55,
-    fontSize: 18,
+    right: 35,
+    fontSize: 16,
+    width: 70,
   },
 
   actions: {

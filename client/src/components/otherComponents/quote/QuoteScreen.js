@@ -18,17 +18,8 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import COLORS from '../../consts/Colors';
 import {useNavigation} from '@react-navigation/native';
 
-const {Clipboard} = NativeModules;
-
 export const QuoteCard = ({quote, onUnlike}) => {
-  const [copied, setCopied] = useState(false);
-  const [image, setImage] = useState('');
   const [liked, setLiked] = useState(quote.liked);
-
-  const handleCopy = () => {
-    copyToClipboard(quote.title);
-    setCopied(true);
-  };
 
   const handleShare = async () => {
     try {
@@ -67,8 +58,18 @@ export const QuoteCard = ({quote, onUnlike}) => {
     }
   };
 
-  const copyToClipboard = text => {
-    Clipboard.setString(text);
+  const handleSaveImage = async () => {
+    try {
+      const {status} = await MediaLibrary.requestPermissionsAsync();
+      if (status === 'granted') {
+        const asset = await MediaLibrary.createAssetAsync(quote.image);
+        if (asset) {
+          console.log('Image saved successfully!');
+        }
+      }
+    } catch (error) {
+      console.error('Error saving image:', error);
+    }
   };
 
   return (
@@ -100,23 +101,6 @@ export const QuoteCard = ({quote, onUnlike}) => {
                 textAlign: 'center',
               }}>
               {liked ? 'Like' : 'Like'}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.button} onPress={handleCopy}>
-            <MaterialCommunityIcon
-              name={copied ? 'check-circle' : 'clipboard-outline'}
-              size={30}
-              color={copied ? COLORS.primary : COLORS.dark}
-            />
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: '700',
-                color: copied ? COLORS.primary : COLORS.dark,
-                textAlign: 'center',
-              }}>
-              {copied ? 'Copy' : 'Copy'}
             </Text>
           </TouchableOpacity>
 
@@ -262,6 +246,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: COLORS.white,
     padding: 10,
+    gap: 20,
   },
 
   quoteContainer: {
