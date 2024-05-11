@@ -22,7 +22,7 @@ export const QuoteCard = ({quote, onUnlike}) => {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: quote.title,
+        message: quote.image,
       });
     } catch (error) {
       console.error('Error sharing quote:', error.message);
