@@ -59,7 +59,6 @@ export const QuoteCard = ({quote, onUnlike}) => {
   return (
     <SafeAreaView>
       <View style={styles.card}>
-        <Text style={styles.category}>{quote.category}</Text>
         <View style={styles.quoteContainer}>
           <Image
             source={{uri: quote.image}}
