@@ -26,7 +26,7 @@ const ContactForm = () => {
   const navigation = useNavigation();
 
   const getApiData = async () => {
-    const url = 'https://jokerdiary.onrender.com/api/contact/getContactForm';
+    const url = 'https://messagestime.com/api/contact/getContactForm';
 
     try {
       const response = await axios.get(url);
@@ -55,7 +55,7 @@ const ContactForm = () => {
 
     try {
       const response = await axios.get(
-        'https://jokerdiary.onrender.com/api/contact/getContactForm',
+        'https://messagestime.com/api/contact/getContactForm',
       );
       const result = response.data.Contact;
       setData(result);
@@ -94,7 +94,7 @@ const ContactForm = () => {
             try {
               setIsLoading(true);
               await axios.delete(
-                `https://jokerdiary.onrender.com/api/contact/removeContactForm/${id}`,
+                `https://messagestime.com/api/contact/removeContactForm/${id}`,
               );
               setData(prevData => prevData.filter(item => item._id !== id));
             } catch (error) {
@@ -125,7 +125,7 @@ const ContactForm = () => {
               await Promise.all(
                 selectedItems.map(async id => {
                   await axios.delete(
-                    `https://jokerdiary.onrender.com/api/contact/removeContactForm/${id}`,
+                    `https://messagestime.com/api/contact/removeContactForm/${id}`,
                   );
                 }),
               );

@@ -26,7 +26,7 @@ const QuotesLists = () => {
   const navigation = useNavigation();
 
   const getApiData = async () => {
-    const url = 'https://jokerdiary.onrender.com/api/quotes/getQuotes';
+    const url = 'https://messagestime.com/api/quotes/getQuotes';
 
     try {
       const response = await axios.get(url);
@@ -49,7 +49,7 @@ const QuotesLists = () => {
 
     try {
       const response = await axios.get(
-        'https://jokerdiary.onrender.com/api/quotes/getQuotes',
+        'https://messagestime.com/api/quotes/getQuotes',
       );
       const result = response.data.Quote;
       setData(result);
@@ -85,7 +85,7 @@ const QuotesLists = () => {
           try {
             setIsLoading(true);
             await axios.delete(
-              `https://jokerdiary.onrender.com/api/quotes/removeQuotes/${id}`,
+              `https://messagestime.com/api/quotes/removeQuotes/${id}`,
             );
             setData(prevData => prevData.filter(item => item._id !== id));
           } catch (error) {
@@ -115,7 +115,7 @@ const QuotesLists = () => {
               await Promise.all(
                 selectedItems.map(async id => {
                   await axios.delete(
-                    `https://jokerdiary.onrender.com/api/quotes/removeQuotes/${id}`,
+                    `https://messagestime.com/api/quotes/removeQuotes/${id}`,
                   );
                 }),
               );

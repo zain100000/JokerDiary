@@ -59,7 +59,7 @@ const AddProduct = () => {
       formData.append('category', addQuote.category);
 
       const addQuoteResponse = await axios.post(
-        'https://jokerdiary.onrender.com/api/quotes/addQuotes',
+        'https://messagestime.com/api/quotes/addQuotes',
         formData,
         {
           headers: {
