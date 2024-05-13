@@ -32,7 +32,7 @@ export const QuoteCard = ({quote, onUnlike}) => {
   const handleLikePress = async () => {
     try {
       const response = await axios.post(
-        `https://jokerdiary.onrender.com/api/quotes/likeQuote/${quote._id}`,
+        `https://messagestime.com/api/quotes/likeQuote/${quote._id}`,
       );
       if (response.status >= 200 && response.status < 300) {
         setLiked(true);
@@ -45,7 +45,7 @@ export const QuoteCard = ({quote, onUnlike}) => {
   const handleUnLikePress = async () => {
     try {
       const response = await axios.post(
-        `https://jokerdiary.onrender.com/api/quotes/unlikeQuote/${quote._id}`,
+        `https://messagestime.com/api/quotes/unlikeQuote/${quote._id}`,
       );
       if (response.status >= 200 && response.status < 300) {
         setLiked(false);
@@ -124,9 +124,7 @@ const QuoteScreen = ({route}) => {
   const fetchQuotes = () => {
     setLoading(true);
     axios
-      .get(
-        `https://jokerdiary.onrender.com/api/quotes/getQuotes?category=${category}`,
-      )
+      .get(`https://messagestime.com/api/quotes/getQuotes?category=${category}`)
       .then(response => {
         setQuotes(response.data.Quote);
         setLoading(false);
@@ -144,7 +142,7 @@ const QuoteScreen = ({route}) => {
 
     try {
       const response = await axios.get(
-        `https://jokerdiary.onrender.com/api/quotes/getQuotes?category=${category}`,
+        `https://messagestime.com/api/quotes/getQuotes?category=${category}`,
       );
       const result = response.data.Quote;
       setQuotes(result);

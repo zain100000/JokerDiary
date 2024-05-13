@@ -35,7 +35,7 @@ const Contact = () => {
       };
 
       const ContactFormApiUrl =
-        'https://jokerdiary.onrender.com/api/contact/uploadContactForm';
+        'https://messagestime.com/api/contact/uploadContactForm';
       const response = await axios.post(ContactFormApiUrl, contactFormData, {
         headers: {
           'Content-Type': 'application/json',

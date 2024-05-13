@@ -23,7 +23,7 @@ const LatestQuotes = () => {
   const fetchLatestQuotes = () => {
     setLoading(true);
     axios
-      .get('https://jokerdiary.onrender.com/api/quotes/latestQuotes')
+      .get('https://messagestime.com/api/quotes/latestQuotes')
       .then(response => {
         setLatestQuotes(response.data.LatestQuotes);
         setLoading(false);
@@ -41,7 +41,7 @@ const LatestQuotes = () => {
 
     try {
       const response = await axios.get(
-        `https://jokerdiary.onrender.com/api/quotes/latestQuotes`,
+        `https://messagestime.com/api/quotes/latestQuotes`,
       );
       const result = response.data.LatestQuotes;
       setLatestQuotes(result);

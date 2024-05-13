@@ -25,7 +25,7 @@ const QuoteOfTheDay = () => {
 
     try {
       const response = await axios.get(
-        `https://jokerdiary.onrender.com/api/quotes/getRandomQuotes`,
+        `https://messagestime.com/api/quotes/getRandomQuotes`,
       );
       const result = response.data.Quote;
       setLikedQuotes(result);
@@ -39,7 +39,7 @@ const QuoteOfTheDay = () => {
   const fetchQuoteOfTheDay = () => {
     setLoading(true);
     axios
-      .get('https://jokerdiary.onrender.com/api/quotes/getRandomQuotes')
+      .get('https://messagestime.com/api/quotes/getRandomQuotes')
       .then(response => {
         setQuote(response.data.Quote);
         setLoading(false);

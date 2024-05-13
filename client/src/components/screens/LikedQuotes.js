@@ -23,7 +23,7 @@ const LikedQuotes = () => {
   const fetchLikedQuotes = () => {
     setLoading(true);
     axios
-      .get(`https://jokerdiary.onrender.com/api/quotes/getLikedQuotes`)
+      .get(`https://messagestime.com/api/quotes/getLikedQuotes`)
       .then(response => {
         setLikedQuotes(response.data.LikedQuotes);
         setLoading(false);
@@ -47,7 +47,7 @@ const LikedQuotes = () => {
 
     try {
       const response = await axios.get(
-        `https://jokerdiary.onrender.com/api/quotes/getLikedQuotes`,
+        `https://messagestime.com/api/quotes/getLikedQuotes`,
       );
       const result = response.data.LikedQuotes;
       setLikedQuotes(result);
