@@ -8,16 +8,18 @@ const Splash = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    setTimeout(() => {
-      navigation.replace("Joker's Diary");
+    const timer = setTimeout(() => {
+      navigation.replace('RewardedAd');
     }, 2000);
-  }, []);
+
+    return () => clearTimeout(timer);
+  }, [navigation]);
 
   return (
     <SafeAreaView style={styles.mainContainer}>
       <Animatable.View
         style={styles.content}
-        animation={'fadeIn'}
+        animation="fadeIn"
         duration={2000}>
         <Text style={styles.heading}>Joker's Diary</Text>
       </Animatable.View>

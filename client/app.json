@@ -1,4 +1,7 @@
 {
   "name": "JokerDiary",
-  "displayName": "JokerDiary"
+  "displayName": "JokerDiary",
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-9640203073053510~3398328456"
+  }
 }
