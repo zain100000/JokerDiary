@@ -9,7 +9,7 @@ const Splash = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.replace('RewardedAd');
+      navigation.replace("Joker's Diary");
     }, 2000);
 
     return () => clearTimeout(timer);
