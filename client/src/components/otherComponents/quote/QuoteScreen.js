@@ -10,12 +10,15 @@ import {
   SafeAreaView,
   RefreshControl,
   Image,
+  PermissionsAndroid,
 } from 'react-native';
 import axios from 'axios';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import COLORS from '../../consts/Colors';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNFS from 'react-native-fs';
+import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 
 export const QuoteCard = ({quote, onUnlike}) => {
   const [liked, setLiked] = useState(quote.liked);
@@ -58,6 +61,52 @@ export const QuoteCard = ({quote, onUnlike}) => {
       }
     } catch (error) {
       console.error('Error unliking quote:', error);
+    }
+  };
+
+  const requestStoragePermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Storage Permission',
+            message:
+              'This app needs access to your storage to save quotes as images.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn(err);
+        return false;
+      }
+    } else {
+      return true;
+    }
+  };
+
+  const handleSavePress = async () => {
+    const hasPermission = await requestStoragePermission();
+    if (!hasPermission) return;
+
+    const downloadDest = `${RNFS.DocumentDirectoryPath}/${quote._id}.jpg`;
+
+    const options = {
+      fromUrl: quote.image,
+      toFile: downloadDest,
+    };
+
+    try {
+      const response = await RNFS.downloadFile(options).promise;
+      if (response.statusCode === 200) {
+        await CameraRoll.save(downloadDest, {type: 'photo'});
+        alert('Image Saved');
+      }
+    } catch (error) {
+      console.error('Error saving image:', error);
     }
   };
 
@@ -106,6 +155,23 @@ export const QuoteCard = ({quote, onUnlike}) => {
                 textAlign: 'center',
               }}>
               Share
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} onPress={handleSavePress}>
+            <MaterialCommunityIcon
+              name="download"
+              size={30}
+              color={COLORS.dark}
+            />
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: '700',
+                color: COLORS.dark,
+                textAlign: 'center',
+              }}>
+              Save
             </Text>
           </TouchableOpacity>
         </View>
