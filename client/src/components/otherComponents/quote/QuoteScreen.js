@@ -15,6 +15,7 @@ import axios from 'axios';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import COLORS from '../../consts/Colors';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const QuoteCard = ({quote, onUnlike}) => {
   const [liked, setLiked] = useState(quote.liked);
@@ -36,6 +37,7 @@ export const QuoteCard = ({quote, onUnlike}) => {
       );
       if (response.status >= 200 && response.status < 300) {
         setLiked(true);
+        await AsyncStorage.setItem(quote._id, JSON.stringify(quote));
       }
     } catch (error) {
       console.error('Error liking quote:', error);
@@ -49,7 +51,10 @@ export const QuoteCard = ({quote, onUnlike}) => {
       );
       if (response.status >= 200 && response.status < 300) {
         setLiked(false);
-        onUnlike(quote._id);
+        await AsyncStorage.removeItem(quote._id);
+        if (typeof onUnlike === 'function') {
+          onUnlike(quote._id);
+        }
       }
     } catch (error) {
       console.error('Error unliking quote:', error);
@@ -83,7 +88,7 @@ export const QuoteCard = ({quote, onUnlike}) => {
                 color: COLORS.dark,
                 textAlign: 'center',
               }}>
-              {liked ? 'Like' : 'Like'}
+              {liked ? 'Unlike' : 'Like'}
             </Text>
           </TouchableOpacity>
 
@@ -115,7 +120,6 @@ const QuoteScreen = ({route}) => {
   const [quotes, setQuotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchQuotes();

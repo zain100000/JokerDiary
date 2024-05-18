@@ -7,6 +7,7 @@ import {
   Text,
   RefreshControl,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {QuoteCard} from '../otherComponents/quote/QuoteScreen';
 import COLORS from '../consts/Colors';
@@ -20,20 +21,22 @@ const LikedQuotes = () => {
     fetchLikedQuotes();
   }, []);
 
-  const fetchLikedQuotes = () => {
+  const fetchLikedQuotes = async () => {
     setLoading(true);
-    axios
-      .get(`https://messagestime.com/api/quotes/getLikedQuotes`)
-      .then(response => {
-        setLikedQuotes(response.data.LikedQuotes);
-        setLoading(false);
-        setRefreshing(false);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        setLoading(false);
-        setRefreshing(false);
-      });
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      const result = await AsyncStorage.multiGet(keys);
+      const quotes = result
+        .map(req => JSON.parse(req[1]))
+        .filter(item => item !== null);
+      setLikedQuotes(quotes);
+      setLoading(false);
+      setRefreshing(false);
+    } catch (error) {
+      console.error('Error fetching liked quotes:', error);
+      setLoading(false);
+      setRefreshing(false);
+    }
   };
 
   const removeLikedQuote = quoteId => {
@@ -44,17 +47,7 @@ const LikedQuotes = () => {
 
   const onRefresh = async () => {
     setRefreshing(true);
-
-    try {
-      const response = await axios.get(
-        `https://messagestime.com/api/quotes/getLikedQuotes`,
-      );
-      const result = response.data.LikedQuotes;
-      setLikedQuotes(result);
-    } catch (error) {
-      console.error('Error fetching new data:', error);
-    }
-
+    await fetchLikedQuotes();
     setRefreshing(false);
   };
 
@@ -71,16 +64,19 @@ const LikedQuotes = () => {
       <FlatList
         data={likedQuotes}
         renderItem={({item}) => (
-          <QuoteCard quote={item} onUnlike={removeLikedQuote} />
+          <QuoteCard
+            quote={{...item, liked: true}}
+            onUnlike={removeLikedQuote}
+          />
         )}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={item => item._id.toString()}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         ListEmptyComponent={
           <View style={styles.noLikeQuotesContainer}>
-            <Text style={styles.noLikeQuotes}>No Like Quotes </Text>
+            <Text style={styles.noLikeQuotes}>No Liked Quotes</Text>
           </View>
         }
       />
