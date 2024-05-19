@@ -4,7 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Splash from './src/components/screens/Splash';
 import DrawerNavigator from './src/components/navigation/DrawerNavigator';
 import QuoteScreen from './src/components/otherComponents/quote/QuoteScreen';
-import RewardedAdComponent from './src/components/otherComponents/ads/RewardedAdComponent';
+// import RewardedAdComponent from './src/components/otherComponents/ads/RewardedAdComponent';
 // import OpenAppAdComponent from './src/components/otherComponents/ads/OpenAppAdComponent';
 
 const Stack = createNativeStackNavigator();
