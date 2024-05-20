@@ -8,7 +8,6 @@ import {
   RefreshControl,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import {QuoteCard} from '../otherComponents/quote/QuoteScreen';
 import COLORS from '../consts/Colors';
 
