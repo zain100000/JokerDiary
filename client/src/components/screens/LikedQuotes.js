@@ -24,10 +24,27 @@ const LikedQuotes = () => {
     setLoading(true);
     try {
       const keys = await AsyncStorage.getAllKeys();
-      const result = await AsyncStorage.multiGet(keys);
+      const likedQuoteKeys = keys.filter(key => key.startsWith('liked_'));
+      const result = await AsyncStorage.multiGet(likedQuoteKeys);
+
+      console.log('AsyncStorage data:', result);
+
       const quotes = result
-        .map(req => JSON.parse(req[1]))
+        .map(req => {
+          try {
+            const quote = JSON.parse(req[1]);
+            return typeof quote === 'object' &&
+              quote !== null &&
+              quote._id &&
+              quote.image
+              ? quote
+              : null;
+          } catch (e) {
+            return null;
+          }
+        })
         .filter(item => item !== null);
+
       setLikedQuotes(quotes);
       setLoading(false);
       setRefreshing(false);
@@ -63,10 +80,7 @@ const LikedQuotes = () => {
       <FlatList
         data={likedQuotes}
         renderItem={({item}) => (
-          <QuoteCard
-            quote={{...item, liked: true}}
-            onUnlike={removeLikedQuote}
-          />
+          <QuoteCard quote={{...item}} onUnlike={removeLikedQuote} />
         )}
         keyExtractor={item => item._id.toString()}
         showsVerticalScrollIndicator={false}
@@ -88,20 +102,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
-
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   noLikeQuotesContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 300,
   },
-
   noLikeQuotes: {
     fontSize: 20,
     color: COLORS.dark,

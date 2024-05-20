@@ -3,25 +3,41 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  TouchableOpacity,
-  Share,
-  SafeAreaView,
-  RefreshControl,
   Image,
+  TouchableOpacity,
+  SafeAreaView,
+  Share,
   PermissionsAndroid,
+  Alert,
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
 } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import COLORS from '../../consts/Colors';
-import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNFS from 'react-native-fs';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 
 export const QuoteCard = ({quote, onUnlike}) => {
-  const [liked, setLiked] = useState(quote.liked);
+  const [liked, setLiked] = useState(false);
+
+  useEffect(() => {
+    checkIfLiked();
+  }, []);
+
+  const checkIfLiked = async () => {
+    try {
+      const likedQuote = await AsyncStorage.getItem(`liked_${quote._id}`);
+      if (likedQuote) {
+        setLiked(true);
+      }
+    } catch (error) {
+      console.error('Error checking liked status:', error);
+    }
+  };
 
   const handleShare = async () => {
     try {
@@ -35,12 +51,13 @@ export const QuoteCard = ({quote, onUnlike}) => {
 
   const handleLikePress = async () => {
     try {
+      await AsyncStorage.setItem(`liked_${quote._id}`, JSON.stringify(quote));
+      setLiked(true);
       const response = await axios.post(
         `https://messagestime.com/api/quotes/likeQuote/${quote._id}`,
       );
       if (response.status >= 200 && response.status < 300) {
-        setLiked(true);
-        await AsyncStorage.setItem(quote._id, JSON.stringify(quote));
+        console.log('Quote liked successfully');
       }
     } catch (error) {
       console.error('Error liking quote:', error);
@@ -49,12 +66,13 @@ export const QuoteCard = ({quote, onUnlike}) => {
 
   const handleUnLikePress = async () => {
     try {
+      await AsyncStorage.removeItem(`liked_${quote._id}`);
+      setLiked(false);
       const response = await axios.post(
         `https://messagestime.com/api/quotes/unlikeQuote/${quote._id}`,
       );
       if (response.status >= 200 && response.status < 300) {
-        setLiked(false);
-        await AsyncStorage.removeItem(quote._id);
+        console.log('Quote unliked successfully');
         if (typeof onUnlike === 'function') {
           onUnlike(quote._id);
         }
@@ -103,7 +121,7 @@ export const QuoteCard = ({quote, onUnlike}) => {
       const response = await RNFS.downloadFile(options).promise;
       if (response.statusCode === 200) {
         await CameraRoll.save(downloadDest, {type: 'photo'});
-        alert('Image Saved');
+        Alert.alert('Image Saved');
       }
     } catch (error) {
       console.error('Error saving image:', error);
